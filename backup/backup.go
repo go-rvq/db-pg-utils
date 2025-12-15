@@ -19,9 +19,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-rvq/db-tools"
 	"github.com/go-rvq/rvq/web"
 	"github.com/go-rvq/rvq/x/i18n"
+	"github.com/go-rvq/rvq/x/packages/db-tools"
 	tarfs "github.com/nlepage/go-tarfs"
 	"gorm.io/gorm"
 )

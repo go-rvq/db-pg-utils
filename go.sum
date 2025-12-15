@@ -13,12 +13,10 @@ github.com/go-playground/locales v0.14.1 h1:EWaQ/wswjilfKLTECiXz7Rh+3BjFhfDFKv/o
 github.com/go-playground/locales v0.14.1/go.mod h1:hxrqLVvrK65+Rwrd5Fc6F2O76J/NuW9t0sjnWqG1slY=
 github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJnYK9S473LQFuzCbDbfSFY=
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
-github.com/go-rvq/db-tools v0.0.0-20251209184224-3a8ec95e46a4 h1:xls2zm9QNWWMbGzMVGC3ZCB6XJMK66k/62YL8Qj2mc8=
-github.com/go-rvq/db-tools v0.0.0-20251209184224-3a8ec95e46a4/go.mod h1:FlKAN6wV+J3FEVQrusgfgY08rVraxNbWnOoz4+fVQoM=
 github.com/go-rvq/htmlgo v1.0.2 h1:NeRbJxwkMESz7VcTpAjaNx9ei1Au10tjOA0kcaH9ZOY=
 github.com/go-rvq/htmlgo v1.0.2/go.mod h1:TGdXftAyHFOT+mwskYgepb2AjgLLJLNoDaDV4SQShkc=
-github.com/go-rvq/rvq v0.0.0-20251209182644-762e9084d579 h1:5GmeUqyL9U4de7cmFbs5FyBMbmy3eYIDy3rTai+2leQ=
-github.com/go-rvq/rvq v0.0.0-20251209182644-762e9084d579/go.mod h1:KFPklVikscXEfRf/FIhAu2Uh8SBTdJFN5lA/jqRDBz8=
+github.com/go-rvq/rvq v0.0.0-20251210140121-404c576ec598 h1:bwVmqSOrkJ0X3YMZgjnlTcMEfeURKZtIP/FNxxOsFeY=
+github.com/go-rvq/rvq v0.0.0-20251210140121-404c576ec598/go.mod h1:fspVYbUr2Uf7bb3hjljSYRqZSAR6ezjBg6jopmZ6QMU=
 github.com/iancoleman/strcase v0.3.0 h1:nTXanmYxhfFAMjZL34Ov6gkzEsSJZ5DbhxWjvSASxEI=
 github.com/iancoleman/strcase v0.3.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=

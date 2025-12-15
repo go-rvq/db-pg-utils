@@ -3,8 +3,7 @@ module github.com/go-rvq/db-pg-utils
 go 1.24
 
 require (
-	github.com/go-rvq/db-tools v0.0.0-20251209184224-3a8ec95e46a4
-	github.com/go-rvq/rvq v0.0.0-20251209182644-762e9084d579
+	github.com/go-rvq/rvq v0.0.0-20251210140121-404c576ec598
 	github.com/nlepage/go-tarfs v1.2.1
 	golang.org/x/text v0.19.0
 	gorm.io/gorm v1.25.11
