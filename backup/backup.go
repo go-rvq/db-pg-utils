@@ -185,7 +185,7 @@ func (b *Backup) String() string {
 	if b.Auto {
 		a = "AUTO"
 	}
-	return fmt.Sprintf("%s (%s, %s, %s) => %q", b.DbName, b.CreatedAt.UTC(), a, b.Message)
+	return fmt.Sprintf("%s (%s, %s) => %q", b.DbName, b.CreatedAt.UTC(), a, b.Message)
 }
 
 func (b *Backup) DetailString(ctx context.Context) string {
@@ -343,14 +343,6 @@ func (c *Controller) listF(auto bool, filter db_tools.ListFilter, cb func(f *Fil
 	return c.list(auto, cb, nil)
 }
 
-func (c *Controller) listSlice(auto bool, filter func(f *File) bool) (files []*File, err error) {
-	err = c.list(auto, func(f *File) error {
-		files = append(files, f)
-		return nil
-	}, filter)
-	return
-}
-
 func (c *Controller) listD(auto bool, dbName string, cb func(f *File) error, filter func(f *File) bool) (err error) {
 	if filter == nil {
 		filter = func(f *File) bool {
@@ -483,7 +475,6 @@ func (b *Controller) startSrv() {
 
 		mux := http.NewServeMux()
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println("@@@@@@@@@@@@@@")
 			q := r.URL.Query()
 			tsi, _ := strconv.ParseInt(q.Get("ts"), 10, 64)
 			ts := time.Unix(tsi, 0).UTC()
@@ -538,12 +529,11 @@ func (b *Controller) startSrv() {
 			}
 
 			n, err := io.Copy(tw, r.Body)
-			fmt.Println(esize, n)
 			size := fmt.Sprint(n)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			} else if n != esize {
-				http.Error(w, fmt.Sprintf("bad received size. expected %s, but got %s", esize, size), http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("bad received size. expected %d, but got %s", esize, size), http.StatusInternalServerError)
 			}
 		})
 		http.Serve(listener, mux)
