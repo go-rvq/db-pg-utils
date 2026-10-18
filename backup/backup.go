@@ -250,12 +250,18 @@ func (c *Controller) Download(w http.ResponseWriter, r *http.Request, id db_tool
 func (c *Controller) Create(auto bool, message string) (bkp db_tools.Backuper, err error) {
 	q := make(url.Values)
 	q.Set("auto", strconv.FormatBool(auto))
-	bkp = new(db_tools.Backup)
-	err = c.getDb().Raw("SELECT * FROM db_backup__create(?, host(inet_client_addr()) || ?, ?)", message, ":"+c.port, q.Encode()).Scan(bkp).Error
-	if err == nil {
-		bkp, err = c.Get(bkp.GetID())
+	b := new(db_tools.Backup)
+	if err = c.getDb().Raw("SELECT * FROM db_backup__create(?, host(inet_client_addr()) || ?, ?)", message, ":"+c.port, q.Encode()).Scan(b).Error; err != nil {
+		return
 	}
-	return
+	// the function says when, not which: the database and the kind are its id
+	// too (FileOf looks in <auto|manual>/<db>), and the file is named in UTC
+	if b.DbName, err = c.CurrentName(context.Background()); err != nil {
+		return
+	}
+	b.Auto = auto
+	b.CreatedAt = b.CreatedAt.UTC()
+	return c.Get(b.GetID())
 }
 
 func (c *Controller) Remove(id db_tools.BackupID) (err error) {
@@ -468,9 +474,11 @@ func (b *Controller) startSrv() {
 	addr := listener.Addr().(*net.TCPAddr)
 	port := addr.Port
 
+	// the port before the server: a backup asked right after Install sends
+	// the database to it
+	b.port = strconv.Itoa(port)
 	go func() {
 		defer listener.Close()
-		b.port = strconv.Itoa(port)
 		b.log.Info(fmt.Sprintf("Listening on port: %d", port))
 
 		mux := http.NewServeMux()
