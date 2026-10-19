@@ -23,6 +23,7 @@ import (
 	"github.com/go-rvq/rvq/x/i18n"
 	"github.com/go-rvq/rvq/x/osenv"
 	"github.com/go-rvq/rvq/x/packages/db-tools"
+	"github.com/jackc/pgx/v5/pgconn"
 	tarfs "github.com/nlepage/go-tarfs"
 	"gorm.io/gorm"
 )
@@ -251,6 +252,17 @@ func (c *Controller) Download(w http.ResponseWriter, r *http.Request, id db_tool
 	return
 }
 
+// plpyError is the error of the function of the backup as it happened: an
+// error raised in PL/Python reaches the client as "error fetching next item
+// from iterator", what happened in its DETAIL ("plpy.Error: pg_dump: …").
+func plpyError(err error) error {
+	var pe *pgconn.PgError
+	if errors.As(err, &pe) && pe.Detail != "" {
+		return fmt.Errorf("PL/Python: %s", strings.TrimSpace(strings.TrimPrefix(pe.Detail, "plpy.Error: ")))
+	}
+	return err
+}
+
 // createPLPython is a backup by the method plpython: the function of the
 // database makes it and sends it to the server of the application.
 func (c *Controller) createPLPython(auto bool, message string) (bkp db_tools.Backuper, err error) {
@@ -258,7 +270,7 @@ func (c *Controller) createPLPython(auto bool, message string) (bkp db_tools.Bac
 	q.Set("auto", strconv.FormatBool(auto))
 	b := new(db_tools.Backup)
 	if err = c.getDb().Raw("SELECT * FROM db_backup__create(?, host(inet_client_addr()) || ?, ?)", message, ":"+c.port, q.Encode()).Scan(b).Error; err != nil {
-		return
+		return nil, plpyError(err)
 	}
 	// the function says when, not which: the database and the kind are its id
 	// too (FileOf looks in <auto|manual>/<db>), and the file is named in UTC
@@ -478,9 +490,20 @@ func (b *Controller) Install() (err error) {
 	ctx := context.Background()
 	if perr := b.db.Exec(createSQL).Error; perr != nil {
 		b.m.plpyErr = &MethodError{Reason: ReasonNoPLPython, Detail: perr.Error()}
-		b.log.Warn("backups: the method plpython is not available", "error", perr)
 	} else {
-		b.startSrv()
+		// what the server needs to make the copy (its pg_dump, its /tmp),
+		// said now — not by the first backup that fails
+		var problem string
+		if cerr := b.getDb().Raw("SELECT db_backup__check()").Scan(&problem).Error; cerr != nil {
+			b.m.plpyErr = &MethodError{Reason: ReasonPLPythonFails, Detail: plpyError(cerr).Error()}
+		} else if problem != "" {
+			b.m.plpyErr = &MethodError{Reason: ReasonPLPythonFails, Detail: problem}
+		} else {
+			b.startSrv()
+		}
+	}
+	if b.m.plpyErr != nil {
+		b.log.Warn("backups: the method plpython is not available", "error", b.m.plpyErr)
 	}
 	if b.m.pgDumpVer, b.m.pgDumpErr = b.checkPgDump(ctx); b.m.pgDumpErr != nil {
 		b.log.Warn("backups: the method pg_dump is not available", "error", b.m.pgDumpErr)

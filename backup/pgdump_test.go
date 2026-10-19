@@ -2,6 +2,7 @@ package backup
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/go-rvq/rvq/x/i18n"
 	db_tools "github.com/go-rvq/rvq/x/packages/db-tools"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -159,7 +161,7 @@ func TestChooseMethod(t *testing.T) {
 	if err := c.SetMethod("pg_dump"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := c.Create(false, "x"); err == nil || !strings.Contains(err.Error(), "pg_dump_old") {
+	if _, err := c.Create(false, "x"); err == nil || !strings.Contains(err.Error(), Messages_en_US.ReasonPgDumpOld) {
 		t.Errorf("an unavailable method: %v", err)
 	}
 	if err := c.SetMethod("nope"); err == nil {
@@ -167,5 +169,17 @@ func TestChooseMethod(t *testing.T) {
 	}
 	if err := c.SetMethod(""); err != nil || c.Method() != MethodPLPython {
 		t.Errorf("back to the default: %v %s", err, c.Method())
+	}
+}
+
+func TestPlpyError(t *testing.T) {
+	err := plpyError(&pgconn.PgError{Message: "error fetching next item from iterator",
+		Detail: "plpy.Error: pg_dump: error: could not open output file \"/tmp/x.pg\": Permission denied\n"})
+	if err.Error() != `PL/Python: pg_dump: error: could not open output file "/tmp/x.pg": Permission denied` {
+		t.Errorf("%q", err)
+	}
+	other := errors.New("x")
+	if plpyError(other) != other {
+		t.Error("another error changed")
 	}
 }

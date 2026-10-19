@@ -21,6 +21,7 @@ type Messages struct {
 	MethodPLPython       string `i18n:"label='Method: PL/Python', hint='The backup method made by the database server (a PL/Python function runs pg_dump there).'"`
 	MethodPgDump         string `i18n:"label='Method: pg_dump', hint='The backup method made by the application (it runs pg_dump with its connection).'"`
 	ReasonNoPLPython     string `i18n:"hint='Why the method PL/Python is not available: the database has no plpython3u, or the function could not be created.'"`
+	ReasonPLPythonFails  string `i18n:"hint='Why the method PL/Python is not available: the database server cannot make the copy (its pg_dump, its /tmp); the error follows.'"`
 	ReasonPgDumpMissing  string `i18n:"hint='Why the method pg_dump is not available: no pg_dump where the application looks for it.'"`
 	ReasonPgDumpOld      string `i18n:"hint='Why the method pg_dump is not available: it is older than the database server.'"`
 	ReasonNoDSN          string `i18n:"hint='Why the method pg_dump is not available: the connection string of the application is not known.'"`
@@ -34,6 +35,7 @@ var (
 		MethodPLPython:       "PL/Python, by the database server",
 		MethodPgDump:         "pg_dump, by the application",
 		ReasonNoPLPython:     "The database has no PL/Python (plpython3u), or its function could not be created.",
+		ReasonPLPythonFails:  "The database server cannot make the copy.",
 		ReasonPgDumpMissing:  "There is no pg_dump where the application looks for it (DB_PG_DUMP).",
 		ReasonPgDumpOld:      "The pg_dump is older than the database server: it refuses to back it up.",
 		ReasonNoDSN:          "The connection string of the application is not known.",
@@ -46,6 +48,7 @@ var (
 		MethodPLPython:       "PL/Python, pelo servidor do banco",
 		MethodPgDump:         "pg_dump, pela aplicação",
 		ReasonNoPLPython:     "O banco não tem PL/Python (plpython3u), ou a função dele não pôde ser criada.",
+		ReasonPLPythonFails:  "O servidor do banco não consegue fazer a cópia.",
 		ReasonPgDumpMissing:  "Não há pg_dump onde a aplicação o procura (DB_PG_DUMP).",
 		ReasonPgDumpOld:      "O pg_dump é mais velho que o servidor do banco: ele se recusa a fazer o backup.",
 		ReasonNoDSN:          "A conexão da aplicação com o banco não é conhecida.",
@@ -78,6 +81,8 @@ func (m *Messages) ReasonText(r Reason) string {
 	switch r {
 	case ReasonNoPLPython:
 		return m.ReasonNoPLPython
+	case ReasonPLPythonFails:
+		return m.ReasonPLPythonFails
 	case ReasonPgDumpMissing:
 		return m.ReasonPgDumpMissing
 	case ReasonPgDumpOld:

@@ -4,8 +4,10 @@ go 1.26.5
 
 require (
 	github.com/go-rvq/rvq v0.0.0-20261018133246-3624c25530e4
+	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nlepage/go-tarfs v1.2.1
 	golang.org/x/text v0.25.0
+	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.31.1
 )
 
@@ -28,7 +30,6 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -40,6 +41,7 @@ require (
 	github.com/ory/pagination v0.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rogpeppe/go-internal v1.16.0 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
@@ -53,6 +55,5 @@ require (
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.5.11 // indirect
 	gorm.io/hints v1.1.2 // indirect
 )

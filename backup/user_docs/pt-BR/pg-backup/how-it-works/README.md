@@ -31,8 +31,10 @@ instalado no banco, nenhuma porta entre os dois:
    `pg_dump`.
 
 Ao iniciar, a aplicação confere quais métodos podem ser usados: o PL/Python
-quando a função dele pôde ser criada, o pg_dump quando ele existe e **não é
-mais velho que o servidor do banco**. A página diz por que um não pode. Sem
+quando a função dele pôde ser criada **e o servidor do banco consegue fazer a
+cópia** — o `pg_dump` de lá, o `/tmp` dele gravável (um arquivo de teste,
+gravado e apagado) —, o pg_dump quando ele existe e **não é mais velho que o
+servidor do banco**. A página diz por que um não pode. Sem
 nenhum escolhido, os backups usam o primeiro que pode ser usado, o PL/Python
 primeiro.
 

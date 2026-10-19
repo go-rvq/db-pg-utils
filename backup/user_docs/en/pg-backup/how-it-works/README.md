@@ -32,8 +32,10 @@ uses — nothing installed in the database, no port between them:
    `pg_dump`.
 
 When the application starts, it checks which methods may be used: PL/Python
-when its function could be created, pg_dump when it is there and **not older
-than the database server**. The page says why one may not. With none chosen,
+when its function could be created **and the database server can make the
+copy** — its `pg_dump` there, its `/tmp` writable (a test file, written and
+removed) —, pg_dump when it is there and **not older than the database
+server**. The page says why one may not. With none chosen,
 the backups use the first one that may be used, PL/Python first.
 
 ## The files

@@ -31,6 +31,7 @@ type Reason string
 
 const (
 	ReasonNoPLPython    Reason = "no_plpython"
+	ReasonPLPythonFails Reason = "plpython_fails"
 	ReasonPgDumpMissing Reason = "pg_dump_missing"
 	ReasonPgDumpOld     Reason = "pg_dump_old"
 	ReasonNoDSN         Reason = "no_dsn"
@@ -44,11 +45,14 @@ type MethodError struct {
 	Detail string
 }
 
+// Error is the error as the log says it: why, in English, and what was
+// found.
 func (e *MethodError) Error() string {
-	if e.Detail == "" {
-		return "backup method not available: " + string(e.Reason)
+	t := "backup method not available: " + Messages_en_US.ReasonText(e.Reason)
+	if e.Detail != "" {
+		t += " (" + e.Detail + ")"
 	}
-	return "backup method not available: " + string(e.Reason) + ": " + e.Detail
+	return t
 }
 
 // Text is the error in ctx's language.

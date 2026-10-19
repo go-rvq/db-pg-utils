@@ -46,5 +46,21 @@ else:
 		else:
 			plpy.info(ret)
 	yield(now, size, message)
+$$ LANGUAGE plpython3u;
+
+CREATE OR REPLACE FUNCTION db_backup__check() RETURNS TEXT AS $$
+# what db_backup__create needs on the database server, checked without a
+# backup: pg_dump there, and /tmp writable by the user the server runs as
+# (where the copy is written). "" when it may; else what fails.
+import os, shutil, tempfile
+if shutil.which("pg_dump") is None:
+	return "pg_dump: not found on the database server"
+try:
+	fd, name = tempfile.mkstemp(dir="/tmp", prefix="db_backup__check-")
+	os.close(fd)
+	os.remove(name)
+except OSError as e:
+	return "pg_dump: error: could not open output file \"/tmp/…\": " + (e.strerror or str(e))
+return ""
 $$ LANGUAGE plpython3u;`
 )

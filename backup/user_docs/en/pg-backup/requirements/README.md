@@ -10,8 +10,15 @@ may, and why not.
   the database (`CREATE EXTENSION plpython3u`).
 - The user of the application creates the function when it starts: a function
   of an untrusted language (`plpython3u`) is created by a **superuser** only.
+  Whether the user of the application is one:
+  `SELECT rolsuper FROM pg_roles WHERE rolname = current_user;` (`t`: it is).
 - `pg_dump` on the server — it comes with PostgreSQL, of its version.
-- **Room in `/tmp`** of the server for one copy while it is sent.
+- **`/tmp` of the server writable by the user PostgreSQL runs as** (the
+  system user `postgres`), with room for one copy while it is sent: there
+  `pg_dump` writes it. A `/tmp` is `1777` (anyone writes, each removes their
+  own); in a container whose `/tmp` is a directory of the server mounted in
+  it, that directory must be `1777` too — a `755` of `root` makes every backup
+  fail with `Permission denied`.
 - The database server **reaches the application**: the address it sees the
   application at, on the port the application listens on for the backups
   (a free port, chosen when it starts — in the log:
