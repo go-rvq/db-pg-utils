@@ -21,6 +21,7 @@ import (
 
 	"github.com/go-rvq/rvq/web"
 	"github.com/go-rvq/rvq/x/i18n"
+	"github.com/go-rvq/rvq/x/osenv"
 	"github.com/go-rvq/rvq/x/packages/db-tools"
 	tarfs "github.com/nlepage/go-tarfs"
 	"gorm.io/gorm"
@@ -202,6 +203,9 @@ type Controller struct {
 	localDir string
 	port     string
 	log      *slog.Logger
+	// pgDump is the pg_dump of the method pg_dump (DB_PG_DUMP).
+	pgDump string
+	m      methods
 }
 
 var _ db_tools.BackupController = (*Controller)(nil)
@@ -247,7 +251,9 @@ func (c *Controller) Download(w http.ResponseWriter, r *http.Request, id db_tool
 	return
 }
 
-func (c *Controller) Create(auto bool, message string) (bkp db_tools.Backuper, err error) {
+// createPLPython is a backup by the method plpython: the function of the
+// database makes it and sends it to the server of the application.
+func (c *Controller) createPLPython(auto bool, message string) (bkp db_tools.Backuper, err error) {
 	q := make(url.Values)
 	q.Set("auto", strconv.FormatBool(auto))
 	b := new(db_tools.Backup)
@@ -454,14 +460,36 @@ func New(db *gorm.DB, i18nb *i18n.Builder) *Controller {
 		dir:      "/backup",
 		localDir: "data/db-backup",
 		log:      web.NewLogger("db-pg-utils:storage_server"),
+		pgDump:   pgDumpBin,
 	}
 }
 
+// pgDumpBin is the pg_dump of the method pg_dump: of the major version of
+// the database server or newer.
+var pgDumpBin = osenv.Get("DB_PG_DUMP",
+	"the pg_dump the application backs the database up with (the method pg_dump of the backups): a path, or a name in the PATH; of the version of the database server or newer",
+	"pg_dump")
+
+// Install makes the methods ready, and says which are available: plpython
+// (its function created in the database, the server of the application
+// started) and pg_dump (there, not older than the server). A method not
+// available is not an error — its backups say why —; none of them is.
 func (b *Controller) Install() (err error) {
-	if err = b.db.Exec(createSQL).Error; err != nil {
-		return err
+	ctx := context.Background()
+	if perr := b.db.Exec(createSQL).Error; perr != nil {
+		b.m.plpyErr = &MethodError{Reason: ReasonNoPLPython, Detail: perr.Error()}
+		b.log.Warn("backups: the method plpython is not available", "error", perr)
+	} else {
+		b.startSrv()
 	}
-	b.startSrv()
+	if b.m.pgDumpVer, b.m.pgDumpErr = b.checkPgDump(ctx); b.m.pgDumpErr != nil {
+		b.log.Warn("backups: the method pg_dump is not available", "error", b.m.pgDumpErr)
+	} else {
+		b.log.Info("backups: the method pg_dump is available", "pg_dump", b.m.pgDumpVer)
+	}
+	if b.m.plpyErr != nil && b.m.pgDumpErr != nil {
+		return fmt.Errorf("backups: no method available: plpython: %v; pg_dump: %v", b.m.plpyErr, b.m.pgDumpErr)
+	}
 	return nil
 }
 
