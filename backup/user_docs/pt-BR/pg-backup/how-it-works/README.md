@@ -1,5 +1,11 @@
 # Como funciona
 
+Um backup é feito por um de dois **métodos**, escolhido na página do banco de
+dados (**Método de backup**, ao lado do armazenamento). Os dois fazem o mesmo
+arquivo.
+
+## PL/Python, pelo servidor do banco
+
 A cópia é feita **pelo próprio servidor do banco de dados**, e enviada à
 aplicação:
 
@@ -11,6 +17,24 @@ aplicação:
 3. Envia o arquivo à aplicação por HTTP: a aplicação escuta numa porta própria
    (escolhida ao iniciar), no endereço em que o banco a vê.
 4. A aplicação guarda o arquivo, e a tarefa diz o que foi feito.
+
+## pg_dump, pela aplicação
+
+A cópia é feita **pela aplicação**, com a conexão que ela já usa — nada
+instalado no banco, nenhuma porta entre os dois:
+
+1. A aplicação roda o `pg_dump -xO -Fc` (o do `DB_PG_DUMP`, senão o `pg_dump`
+   do PATH dela), conectado como ela está conectada: o host, a porta, o
+   usuário, a senha e o banco da conexão dela vão ao `pg_dump` pelo ambiente
+   (`PGHOST`, `PGPASSWORD`, …) — a senha nunca numa linha de comando.
+2. Ela guarda o arquivo, e a tarefa diz o que foi feito. Parar a tarefa para o
+   `pg_dump`.
+
+Ao iniciar, a aplicação confere quais métodos podem ser usados: o PL/Python
+quando a função dele pôde ser criada, o pg_dump quando ele existe e **não é
+mais velho que o servidor do banco**. A página diz por que um não pode. Sem
+nenhum escolhido, os backups usam o primeiro que pode ser usado, o PL/Python
+primeiro.
 
 ## Os arquivos
 

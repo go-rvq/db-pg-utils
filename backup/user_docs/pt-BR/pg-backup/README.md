@@ -2,7 +2,8 @@
 
 Os backups do banco de dados PostgreSQL: uma cópia de todos os dados, feita
 uma vez por dia (o **backup automático**) ou quando alguém pede (**Criar
-backup**, na página do banco de dados).
+backup**, na página do banco de dados) — pelo servidor do banco (PL/Python) ou
+pela aplicação (pg_dump), o **método de backup** escolhido lá.
 
 Cada backup é um arquivo guardado pela aplicação, listado na página do banco
 de dados, onde pode ser baixado ou removido.

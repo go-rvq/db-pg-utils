@@ -1,5 +1,10 @@
 # How it works
 
+A backup is made by one of two **methods**, chosen on the page of the
+database (**Backup method**, beside the persistence). Both make the same file.
+
+## PL/Python, by the database server
+
 The copy is made by **the database server itself**, and sent to the
 application:
 
@@ -12,6 +17,24 @@ application:
    a port of its own (chosen when it starts), at the address the database
    sees it at.
 4. The application keeps the file, and the job says what was made.
+
+## pg_dump, by the application
+
+The copy is made by **the application**, with the connection it already
+uses — nothing installed in the database, no port between them:
+
+1. The application runs `pg_dump -xO -Fc` (the one of `DB_PG_DUMP`, else
+   `pg_dump` in its PATH), connected as it is connected: the host, the port,
+   the user, the password and the database of its connection go to `pg_dump`
+   by its environment (`PGHOST`, `PGPASSWORD`, …) — the password is never on
+   a command line.
+2. It keeps the file, and the job says what was made. Stopping the job stops
+   `pg_dump`.
+
+When the application starts, it checks which methods may be used: PL/Python
+when its function could be created, pg_dump when it is there and **not older
+than the database server**. The page says why one may not. With none chosen,
+the backups use the first one that may be used, PL/Python first.
 
 ## The files
 
