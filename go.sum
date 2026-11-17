@@ -25,8 +25,8 @@ github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJn
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
 github.com/go-rvq/htmlgo v1.0.3-0.20260720020646-75ccd466dbcb h1:/RpGhhbbKZyv76wGET74S6Vn1zz3Jb43Wq7Ag7VhI6o=
 github.com/go-rvq/htmlgo v1.0.3-0.20260720020646-75ccd466dbcb/go.mod h1:TGdXftAyHFOT+mwskYgepb2AjgLLJLNoDaDV4SQShkc=
-github.com/go-rvq/rvq v0.0.0-20261117005515-ab2987b2bac7 h1:ptsMRJySa0zLKk0Y8EMPejjkKZNrdE9vmNrTivWKFeo=
-github.com/go-rvq/rvq v0.0.0-20261117005515-ab2987b2bac7/go.mod h1:8AstV38c8qZa1bBqnjAKzBSl50FCfpaIzQBvaTn1S9w=
+github.com/go-rvq/rvq v0.0.0-20261117183525-23394631c745 h1:fA2SkJ+VenLcq09VCvzGyjj261Umi0TTXk04NEoEVQ8=
+github.com/go-rvq/rvq v0.0.0-20261117183525-23394631c745/go.mod h1:8AstV38c8qZa1bBqnjAKzBSl50FCfpaIzQBvaTn1S9w=
 github.com/gobwas/glob v0.2.3 h1:A4xDbljILXROh+kObIiy5kIaPYD8e96x1tgBhUI5J+Y=
 github.com/gobwas/glob v0.2.3/go.mod h1:d3Ez4x06l9bZtSvzIay5+Yzi0fmZzPgnTbPcKjJAkT8=
 github.com/golang/mock v1.6.0 h1:ErTB+efbowRARo13NNdxyJji2egdxLGQhRaY+DUumQc=

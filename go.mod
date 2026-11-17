@@ -3,7 +3,7 @@ module github.com/go-rvq/db-pg-utils
 go 1.26.5
 
 require (
-	github.com/go-rvq/rvq v0.0.0-20261117005515-ab2987b2bac7
+	github.com/go-rvq/rvq v0.0.0-20261117183525-23394631c745
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nlepage/go-tarfs v1.2.1
 	golang.org/x/text v0.25.0
