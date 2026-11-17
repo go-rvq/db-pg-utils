@@ -23,8 +23,9 @@ const (
 )
 
 // Methods are the methods, in the order they are offered (and the default
-// is the first available).
-var Methods = []Method{MethodPLPython, MethodPgDump}
+// is the first available): pg_dump first — nothing installed in the
+// database —, then plpython.
+var Methods = []Method{MethodPgDump, MethodPLPython}
 
 // Reason is why a method is not available.
 type Reason string
@@ -124,7 +125,7 @@ func (c *Controller) Method() Method {
 			return meth
 		}
 	}
-	return MethodPLPython
+	return Methods[0]
 }
 
 // SetMethod chooses the method backups are made with ("": the default). A

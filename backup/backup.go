@@ -290,45 +290,27 @@ func (c *Controller) Remove(id db_tools.BackupID) (err error) {
 	return os.Remove(f.Path)
 }
 
+// RemoveOlder removes the backups (auto or manual) p does not keep: none
+// when p is off or not set (Persistence.Removable), never the newest.
 func (c *Controller) RemoveOlder(auto bool, p *db_tools.Persistence) (removed []db_tools.Backuper, err error) {
 	var all []db_tools.Backuper
-	err = c.List(auto, func(bkp db_tools.Backuper) error {
+	if err = c.List(auto, func(bkp db_tools.Backuper) error {
 		all = append(all, bkp)
 		return nil
-	}, nil)
-
-	if err != nil {
+	}, nil); err != nil {
 		return
 	}
-
-	var (
-		m  = db_tools.Mapper(all)
-		rm []time.Time
-		g  *db_tools.IntervalGrouper
-	)
-
-	g, rm = p.Group(m.Keys())
-
-	g.MustLast(func(t []time.Time) {
-		rm = append(rm, t...)
-	})
-
-	if len(rm) > 0 {
-		sort.Slice(rm, func(i, j int) bool {
-			return rm[i].Before(rm[j])
-		})
-
-		mm := m.Map()
-
-		for _, t := range rm {
-			b := mm[t]
-			if err = c.Remove(b.GetID()); err != nil {
-				return
-			}
-			removed = append(removed, b)
+	m := db_tools.Mapper(all)
+	rm := p.Removable(m.Keys())
+	sort.Slice(rm, func(i, j int) bool { return rm[i].Before(rm[j]) })
+	mm := m.Map()
+	for _, t := range rm {
+		b := mm[t]
+		if err = c.Remove(b.GetID()); err != nil {
+			return
 		}
+		removed = append(removed, b)
 	}
-
 	return
 }
 
@@ -470,10 +452,22 @@ func New(db *gorm.DB, i18nb *i18n.Builder) *Controller {
 	return &Controller{
 		db:       db,
 		dir:      "/backup",
-		localDir: "data/db-backup",
+		localDir: backupDir,
 		log:      web.NewLogger("db-pg-utils:storage_server"),
 		pgDump:   pgDumpBin,
 	}
+}
+
+// backupDir is where the backups are written (DB_BACKUP_DIR).
+var backupDir = osenv.Get("DB_BACKUP_DIR",
+	"the directory the backups of the database are written to (by the application)", "data/db-backup")
+
+// Available says whether a method of backup is available (Install found
+// one).
+func (b *Controller) Available() bool {
+	b.m.mu.RLock()
+	defer b.m.mu.RUnlock()
+	return b.m.plpyErr == nil || b.m.pgDumpErr == nil
 }
 
 // pgDumpBin is the pg_dump of the method pg_dump: of the major version of

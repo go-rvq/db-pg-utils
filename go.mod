@@ -3,7 +3,7 @@ module github.com/go-rvq/db-pg-utils
 go 1.26.5
 
 require (
-	github.com/go-rvq/rvq v0.0.0-20261018133246-3624c25530e4
+	github.com/go-rvq/rvq v0.0.0-20261117005515-ab2987b2bac7
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nlepage/go-tarfs v1.2.1
 	golang.org/x/text v0.25.0
@@ -17,7 +17,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/gad-lang/gad v0.1.0-rc.33.0.20261018132931-08adf6abed4d // indirect
+	github.com/gad-lang/gad v0.1.0-rc.33.0.20261102153629-03bd14c13c2a // indirect
 	github.com/go-playground/form v3.1.4+incompatible // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

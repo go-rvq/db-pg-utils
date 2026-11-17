@@ -35,12 +35,24 @@ quando a função dele pôde ser criada **e o servidor do banco consegue fazer a
 cópia** — o `pg_dump` de lá, o `/tmp` dele gravável (um arquivo de teste,
 gravado e apagado) —, o pg_dump quando ele existe e **não é mais velho que o
 servidor do banco**. A página diz por que um não pode. Sem
-nenhum escolhido, os backups usam o primeiro que pode ser usado, o PL/Python
-primeiro.
+nenhum escolhido, os backups usam o primeiro que pode ser usado, o **pg_dump
+primeiro** (nada instalado no banco). Nenhum disponível: a aplicação sobe
+mesmo assim, diz no log por quê, e o banco fica sem backup.
+
+## O backup automático
+
+Com um método disponível, o banco é copiado **todo dia**. Uma instalação sem
+armazenamento configurado (ou com ele vazio) recebe o padrão: **30 dias** —
+depois de cada backup automático, fica o mais recente de cada um dos 30 dias
+mais recentes que têm backup (30 backups; um dia sem backup não conta), e os
+outros são apagados (o mais novo nunca). Semanas, meses e anos contam do mesmo
+jeito, cada um depois do anterior. O armazenamento muda na página do banco; o
+**Backup automático** desliga só o diário (o manual continua).
 
 ## Os arquivos
 
-Os backups ficam no diretório de dados da aplicação:
+Os backups ficam no diretório de dados da aplicação (`DB_BACKUP_DIR`, por
+padrão `data/db-backup`):
 
 ```
 data/db-backup/

@@ -36,11 +36,25 @@ when its function could be created **and the database server can make the
 copy** — its `pg_dump` there, its `/tmp` writable (a test file, written and
 removed) —, pg_dump when it is there and **not older than the database
 server**. The page says why one may not. With none chosen,
-the backups use the first one that may be used, PL/Python first.
+the backups use the first one that may be used, **pg_dump first** (nothing
+installed in the database). None available: the application starts anyway,
+says why in the log, and the database is not backed up.
+
+## The automatic backup
+
+With a method available, the database is copied **every day**. An
+installation without a retention configured (or with an empty one) is given
+the default: **30 days** — after each automatic backup, the newest of each of
+the 30 most recent days that have backups is kept (30 backups; a day without
+one does not count), the others removed (never the newest). Weeks, months and
+years count the same way, each after the one before. The retention changes on the page
+of the database; **Automatic backup** turns only the daily one off (the
+manual one goes on).
 
 ## The files
 
-The backups are kept in the data directory of the application:
+The backups are kept in the data directory of the application (`DB_BACKUP_DIR`,
+by default `data/db-backup`):
 
 ```
 data/db-backup/
